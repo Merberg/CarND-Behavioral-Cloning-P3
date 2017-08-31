@@ -1,3 +1,9 @@
+
+# coding: utf-8
+
+# In[7]:
+
+
 import os
 import csv
 import cv2
@@ -18,13 +24,14 @@ with open('data/driving_log.csv') as csvfile:
 
 # Reserve data samples for validation
 training_samples, validation_samples = train_test_split(sampleLines, test_size=0.2)
+
 print("{} Training Samples".format(len(training_samples)))
 print("{} Validation Samples".format(len(validation_samples)))
 
 # Use a Generator to read in the data in partitions
 def generator(samples, batch_size=32):
     num_samples = len(samples)
-
+    
     while 1:
         samples = shuffle(samples)
         for offset in range(0, num_samples, batch_size):
@@ -72,6 +79,7 @@ model.add(Convolution2D(64,3,3,activation='elu'))
 model.add(Convolution2D(64,3,3,activation='elu'))
 model.add(Flatten())
 model.add(Dropout(0.2, input_shape=(100,)))
+model.add(Activation('elu'))
 model.add(Dense(100))
 model.add(Activation('elu'))
 model.add(Dense(50))
@@ -92,3 +100,4 @@ print(history_object.history.keys())
 
 # To run in the simulator, the model must be saved
 model.save('model.h5')
+
