@@ -1,6 +1,6 @@
-#**Behavioral Cloning** 
+# **Behavioral Cloning**
 
-##Writeup Template
+## Writeup Template
 
 ---
 
@@ -27,7 +27,7 @@ The goals / steps of this project are the following:
 ## Rubric Points
 
 ---
-###Required Files & Quality of Code
+### Required Files & Quality of Code
 
 My project includes the following files required to run the simulator in autonomous mode:
 * _model.py_ contains the script to create and train the model
@@ -48,9 +48,11 @@ docker run -it --rm -p 4567:4567 -v $PWD:/src udacity/carnd-term1-starter-kit py
 
 To efficiently use memory, the model.py file use a Python generator for processing and retrieving the training data.  It also contains code for training and saving the convolution neural network.  This file, along with BehavioralCloning.ipynb, shows the pipeline I used for training and validating the model.
 
-###Model Architecture
+### Model Architecture
 
-My model follows the design of the CNN architecture documented by NVIDIA in [End to End Learning for Self-Driving Cars](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf).![image1]
+My model follows the design of the CNN architecture documented by NVIDIA in [End to End Learning for Self-Driving Cars](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf).
+![image1]
+
 The NVIDIA engineers have empirically demonstrated, in simulation and in New Jersey driving conditions, that this design adequitly controls the stearing angle of the vehicle.  Their goal of designing a network that uses a minimal amount of training data (72 hours of image capture) to learn road features using steering alone directly applies to this project.  Therefore, I used this base architecture (three 5x5 filters, two 3x3 filters, and four fully connected layers) with some modifications:
 * a Keras lamdba layer normalizes the input data.
 ```
@@ -63,24 +65,26 @@ model.add(Dense(xxx))
 model.add(Activation('elu'))
 ```
 * a dropout layer helps reduce overfitting.  Training experiments helped confirm the effectiveness of the dropout layer:
+
 | No Dropout Layer | Dropout Layer |
 |---------|---------|
-|![image3]|![image4]|
+| ![image3] | ![image4] |
 
 While training, I discovered that the ELU activation layers were more effective at correcting overfitting than dropout layers.
 
 To avoid manually tuning the learning rate, an adam optimizer was used.
 
-#####~~Initial Architecture~~
+##### ~~Initial Architecture~~
 Prior to using the NVIDIA design, I attempted to use a trained GoogLeNet to make use of the knowledge gained in the Transfer Learning section.  This approach was abandoned due to the Keras version provided in the docker file.
 
-###Training Data and Strategy
+### Training Data and Strategy
 
 The data samples provided for this project were augmented using the Udacity provided simulator.  The `train_test_split` function split the sample data to reserve validation samples, which helps ensure that the model does not memorize the data or overfit.  These samples were fed into a Python generator.  For each line of sample data, the generator saved six images; center, center flipped, left, left flipped, right, and right flipped.
 ![image2]
+
 Six angles were also saved, using a correction of +/-0.15 for the left and right camera images.  This data expantion strategy helped maximum the image collection per run.
 
-The following training table provides the type of data collection that was executed to add to the data samples provided by the project [2]:
+Training data was collected iteratively.  When the autonomous vehicle encountered problems, the simulation was stopped and new data was collected.  The network was then re-trained and tested again.  The following training table provides the type of data collection that was executed to add to the data samples provided by the project [2]:
 
 | | Style | Purpose |
 |--|-------|---------|
@@ -89,9 +93,6 @@ The following training table provides the type of data collection that was execu
 | 3 | Bridge entrance recovery shorts | Correct driving off the bridge rather than entering it |
 | 4 | Off-road dirt recovery shorts | Correct driving off of road and into dirt, open spaces when lines disappear |
 | 5 | Curve recovery shorts | Additional corrections for keeping in-lane on curves |
-
-
-
 
 
 [1]: Newer versions of Keras include activations as inputs for Dense layers, which makes for a cleaner, easier to read code.
